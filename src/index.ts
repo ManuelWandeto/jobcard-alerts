@@ -24,7 +24,7 @@ const bot = createBot(
 let records = new Map<string, {page: number, hasNextPage?: boolean, lastRequest: number}>();
 try {
     await bot.startExpressServer({
-        webhookVerifyToken: process.env.WEBHOOK_VERIFICATION_TOKEN ?? '',
+        webhookVerifyToken: process.env.WEBHOOK_VERIFICATION_TOKEN ?? ''
     });
     bot.on('message', async (msg) => {
         const userLog = logger.child({user: msg.from})
