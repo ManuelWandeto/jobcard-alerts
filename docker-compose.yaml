@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  api:
+    build: ./
+    image: jobcard_alerts
+    ports:
+      - 4000:3000
+    restart: always
+    volumes: 
+      - ./app.log:/app/app.log/
+    env_file:
+      - .env
