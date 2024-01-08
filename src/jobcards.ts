@@ -23,7 +23,7 @@ export interface Jobcard {
     created_at: Date
 }
 
-export async function getJobcards(pool: Pool, page = 1, pageSize = 5): Promise<JobsResponse | null> {
+export async function getJobcards(pool: Pool, status: string, page = 1, pageSize = 5): Promise<JobsResponse | null> {
     const query = `
     SELECT 
         j.id, 
@@ -49,15 +49,15 @@ export async function getJobcards(pool: Pool, page = 1, pageSize = 5): Promise<J
     ON j.supervised_by = s.id
     LEFT JOIN jc_attachments as a
     ON j.id = a.jobcard_id
-    WHERE (status IN ('OVERDUE', 'SCHEDULED', 'REPORTED') AND priority = 'URGENT') OR COALESCE(j.start_date, j.end_date) IS NULL
+    WHERE status = ?
     GROUP BY j.id
-    ORDER BY created_at ASC, priority DESC, status DESC
+    ORDER BY created_at ASC, priority DESC
     LIMIT ?
     OFFSET ?;
     `
     try {
         
-        const jobcards = await pool.query<Jobcard[]>(query, [pageSize + 1, pageSize * (page - 1)])
+        const jobcards = await pool.query<Jobcard[]>(query, [status.toUpperCase(), pageSize + 1, pageSize * (page - 1)])
         const hasNextPage = (jobcards.length < pageSize + 1) ? false : true
         if(hasNextPage) {
             jobcards.pop()
@@ -68,7 +68,7 @@ export async function getJobcards(pool: Pool, page = 1, pageSize = 5): Promise<J
         }
     } catch (error) {
         logger.fatal(error, 'Error fetching jobcards')
-        return null
+        throw error
     }
 }
 
