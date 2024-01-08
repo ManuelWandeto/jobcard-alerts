@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "start-dev": "nodemon dist/index.js",
     "start": "node dist/index.js",
     "build": "tsc --build --clean && tsc",
     "dev": "tsc -w"
